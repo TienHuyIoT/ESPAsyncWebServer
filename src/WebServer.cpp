@@ -80,7 +80,7 @@ bool AsyncWebServer::removeHandler(AsyncWebHandler *handler){
 }
 
 void AsyncWebServer::begin(uint16_t port){
-  if (port != NULL)
+  if (port != 0)
   {
     _server.port(port);
   }
