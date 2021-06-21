@@ -24,6 +24,10 @@
 #include <libb64/cencode.h>
 
 #ifndef ESP8266
+#ifdef ESP32
+#if ESP_IDF_VERSION_MAJOR >= 4
+#include "sha/sha_parallel_engine.h"
+#else
 extern "C" {
 typedef struct {
     uint32_t state[5];
@@ -36,6 +40,8 @@ void SHA1Init(SHA1_CTX* context);
 void SHA1Update(SHA1_CTX* context, const unsigned char* data, uint32_t len);
 void SHA1Final(unsigned char digest[20], SHA1_CTX* context);
 }
+#endif // ESP_IDF_VERSION_MAJOR >= 4
+#endif // ESP32
 #else
 #include <Hash.h>
 #endif
@@ -1268,11 +1274,17 @@ AsyncWebSocketResponse::AsyncWebSocketResponse(const String& key, AsyncWebSocket
   sha1(key + WS_STR_UUID, hash);
 #else
   (String&)key += WS_STR_UUID;
+#ifdef ESP32
+#if ESP_IDF_VERSION_MAJOR >= 4
+  esp_sha(SHA1, (unsigned char *)key.c_str(), key.length(), &hash[0]);
+#else
   SHA1_CTX ctx;
   SHA1Init(&ctx);
   SHA1Update(&ctx, (const unsigned char*)key.c_str(), key.length());
   SHA1Final(hash, &ctx);
-#endif
+#endif // ESP_IDF_VERSION_MAJOR >= 4
+#endif // ESP32
+#endif // ESP8266
   base64_encodestate _state;
   base64_init_encodestate(&_state);
   int len = base64_encode_block((const char *) hash, 20, buffer, &_state);
