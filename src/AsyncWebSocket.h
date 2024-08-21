@@ -227,6 +227,7 @@ class AsyncWebSocketClient {
     void binary(AsyncWebSocketMessageBuffer *buffer); 
 
     bool canSend() { return _messageQueue.length() < WS_MAX_QUEUED_MESSAGES; }
+    size_t queueLength() { return _messageQueue.length(); }
 
     //system callbacks (do not call)
     void _onAck(size_t len, uint32_t time);

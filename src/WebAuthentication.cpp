@@ -60,7 +60,7 @@ bool checkBasicAuthentication(const char * hash, const char * username, const ch
 
 static bool getMD5(uint8_t * data, uint16_t len, char * output){//33 bytes or more
 #ifdef ESP32
-    mbedtls_md5_context _ctx;
+  mbedtls_md5_context _ctx;
 #else
     md5_context_t _ctx;
 #endif

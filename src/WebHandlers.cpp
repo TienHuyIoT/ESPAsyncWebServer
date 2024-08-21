@@ -190,8 +190,23 @@ void AsyncStaticWebHandler::handleRequest(AsyncWebServerRequest *request)
   String filename = String((char*)request->_tempObject);
   free(request->_tempObject);
   request->_tempObject = NULL;
-  if((_username != "" && _password != "") && !request->authenticate(_username.c_str(), _password.c_str()))
+  if(_username != "" && _password != "")
+  {
+    if(!request->authenticate(_username.c_str(), _password.c_str()))
+    {
       return request->requestAuthentication();
+    } 
+  }     
+  else
+  {
+    if(_onAuthenticate)
+    {
+      if(!_onAuthenticate(request))
+      {
+        return;
+      }
+    }
+  }
 
   if (request->_tempFile == true) {
     String etag = String(request->_tempFile.size());
